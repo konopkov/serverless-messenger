@@ -5,6 +5,8 @@
     "serverless-messenger": "bin/serverless-messenger.js"
   },
   "scripts": {
+    "lint": "eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
@@ -14,9 +16,12 @@
     "@types/jest": "^27.5.0",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "aws-cdk": "2.27.0",
+    "eslint": "^8.20.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
-    "aws-cdk": "2.27.0",
     "ts-node": "^10.7.0",
     "typescript": "~3.9.7"
   },
