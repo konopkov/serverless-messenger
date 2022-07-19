@@ -1,0 +1,58 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+"""
+Root query type
+"""
+type Query {
+    getMessages(filter: MessageFilter): [Message]
+}
+
+"""
+Root mutation type
+"""
+type Mutation {
+    sendMessage(input: MessageInput!): Message
+}
+
+"""
+Delivery method type
+"""
+enum DeliveryMethod {
+    EMAIL
+    SMS
+}
+
+enum DeliveryStatus {
+    PENDING
+    ACCEPTED
+    DELIVERED
+    FAILED
+}
+
+type Message {
+    to: String
+    from: String
+    message: String
+    deliveryMethod: DeliveryMethod
+    deliveryStatus: DeliveryStatus
+    createdAt: String
+}
+
+input MessageFilter {
+    receiverId: String
+    to: String
+    senderId: String
+    from: String
+}
+
+input MessageInput {
+    receiverId: String
+    to: String!
+    senderId: String
+    from: String
+    message: String!
+    deliveryMethod: DeliveryMethod!
+}
