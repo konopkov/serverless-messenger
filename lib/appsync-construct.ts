@@ -14,6 +14,7 @@ export interface AppSyncProps extends ServiceProps {
 export class AppSync extends Construct {
     public readonly graphqlApi: appsync.CfnGraphQLApi;
     public readonly lambdaDataSource: appsync.CfnDataSource;
+    public readonly apiKey: appsync.CfnApiKey;
 
     constructor(scope: Construct, id: string, props: AppSyncProps) {
         super(scope, id);
@@ -31,6 +32,7 @@ export class AppSync extends Construct {
         const apiKey = new appsync.CfnApiKey(this, appsyncApiKey, {
             apiId: graphqlApi.attrApiId,
         });
+        this.apiKey = apiKey;
 
         const appsyncApiSchema = `${serviceName}-appsync-api-schema-${stage}`;
         const graphqlApiSchema = new appsync.CfnGraphQLSchema(this, appsyncApiSchema, {

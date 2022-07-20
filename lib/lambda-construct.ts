@@ -1,5 +1,5 @@
 import { Duration } from 'aws-cdk-lib';
-import { Function, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function, Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps, SourceMapMode } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 import * as path from 'path';
@@ -40,6 +40,27 @@ export class Lambda extends Construct {
             environment: environment,
             tracing: Tracing.ACTIVE,
             events: events,
+        });
+
+        this.lambda = lambda;
+    }
+}
+
+export class DebugLambda extends Construct {
+    public readonly lambda: Function;
+
+    constructor(scope: Construct, id: string, props: LambdaProps) {
+        super(scope, id);
+
+        const [fileName, _, handler = 'handler'] = props.handler.split('.');
+        const entryPath = `local/src/functions/${fileName}.${handler}`;
+
+        const lambda = new Function(this, id, {
+            runtime: Runtime.NODEJS_16_X,
+            code: Code.fromAsset(''),
+            handler: entryPath,
+            timeout: Duration.seconds(props.timeoutSeconds ?? 30),
+            environment: props.environment,
         });
 
         this.lambda = lambda;

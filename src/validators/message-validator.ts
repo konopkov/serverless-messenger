@@ -4,9 +4,9 @@ import { DeliveryMethod } from '../shared/models';
 import { EmailMessageSchema, SMSMessageSchema } from './schemas';
 import { ValidatorInterface } from './models/validator-interface';
 
-import type { NotificationMessage } from '../shared/models';
-export class MessageValidator implements ValidatorInterface<NotificationMessage> {
-    validate(message: NotificationMessage): NotificationMessage {
+import type { Message } from '../shared/models';
+export class MessageValidator implements ValidatorInterface<Message> {
+    validate(message: Message): Message {
         const schemas = {
             [DeliveryMethod.SMS]: SMSMessageSchema,
             [DeliveryMethod.EMAIL]: EmailMessageSchema,

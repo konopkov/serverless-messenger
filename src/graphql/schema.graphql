@@ -33,7 +33,9 @@ enum DeliveryStatus {
 }
 
 type Message {
+    receiverId: String
     to: String
+    senderId: String
     from: String
     message: String
     deliveryMethod: DeliveryMethod

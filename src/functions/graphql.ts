@@ -1,10 +1,17 @@
-import { Context, AppSyncResolverEvent } from 'aws-lambda';
+import { AppSyncResolverEvent, Context } from 'aws-lambda';
+
 import { Mutations } from '../graphql/mutations';
 import { Queries } from '../graphql/queries';
-import { NotificationMessage } from '../shared/models';
+import container from '../inversify.config';
+import { IoCTypes } from '../inversify.types';
+import { Message } from '../shared/models';
+
+import type { MessageServiceInterface } from '../services';
+
+const messageService = container.get<MessageServiceInterface>(IoCTypes.MessageService);
 
 type Arguments = {
-    input: NotificationMessage;
+    input: Message;
 };
 
 export const handler = async (_event: AppSyncResolverEvent<Arguments>, _context: Context): Promise<any> => {
@@ -14,7 +21,7 @@ export const handler = async (_event: AppSyncResolverEvent<Arguments>, _context:
 
         case Mutations.sendMessage: {
             const message = _event?.arguments?.input;
-            return message;
+            return messageService.send(message);
         }
 
         default:

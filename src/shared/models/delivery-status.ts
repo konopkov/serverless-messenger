@@ -1,6 +1,6 @@
 export enum DeliveryStatus {
-    PENDING,
-    ACCEPTED,
-    DELIVERED,
-    FAILED,
+    PENDING = 'PENDING',
+    ACCEPTED = 'ACCEPTED',
+    DELIVERED = 'DELIVERED',
+    FAILED = 'FAILED',
 }

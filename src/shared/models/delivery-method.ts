@@ -1,4 +1,4 @@
 export enum DeliveryMethod {
-    EMAIL,
-    SMS,
+    EMAIL = 'EMAIL',
+    SMS = 'SMS',
 }
