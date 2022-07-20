@@ -69,15 +69,21 @@ export class ServerlessMessengerStack extends Stack {
             resolver.addDependsOn(lambdaDataSource);
         });
 
-        // Sns publish policy
-        const statement = new iam.PolicyStatement({
+        // Sns publish statement
+        const snsStatement = new iam.PolicyStatement({
             actions: ['SNS:Publish'],
+            resources: ['*'],
+        });
+
+        // Sns publish statement
+        const sesStatement = new iam.PolicyStatement({
+            actions: ['SES:SendEmail'],
             resources: ['*'],
         });
 
         const appSyncLambdaPolicyId = `${ServiceProps.serviceName}-sns-policy-${ServiceProps.stage}`;
         const policy = new iam.Policy(this, appSyncLambdaPolicyId, {
-            statements: [statement],
+            statements: [snsStatement, sesStatement],
         });
 
         policy.attachToRole(<iam.IRole>appSyncLambda.role);
