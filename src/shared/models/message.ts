@@ -5,6 +5,7 @@ export interface Message {
     to: string;
     senderId?: string;
     from?: string;
+    subject?: string;
     message: string;
     deliveryMethod: DeliveryMethod;
     deliveryStatus: DeliveryStatus;

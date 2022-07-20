@@ -1,5 +1,6 @@
+import { Message } from '../../../shared/models';
 import { Email } from './email';
 
 export interface EmailServiceInterface {
-    send(email: Email): Promise<Email>;
+    send(message: Message): Promise<Email>;
 }
