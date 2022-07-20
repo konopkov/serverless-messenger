@@ -1,18 +1,17 @@
-import { fstat } from 'fs';
+/// <reference path="./templates/index.d.ts" />
+import defaultTemplate from './templates/default.html';
+
 import { inject, injectable } from 'inversify';
 import * as nunjucks from 'nunjucks';
-import * as fs from 'fs';
-import * as path from 'path';
 
 import { IoCTypes } from '../../inversify.types';
+import { Message } from '../../shared/models';
 
 import type { Email, EmailServiceInterface, EmailStrategyInterface } from './models';
-import { Message } from '../../shared/models';
 
 @injectable()
 export class EmailService implements EmailServiceInterface {
-    private _templatesDir = 'templates';
-    private _defaultTemplate = 'email-general.html';
+    private _defaultTemplate = defaultTemplate;
     private _defaultSubject = 'Message';
     private _defaultFrom = 'konopkov@gmail.com';
 
@@ -32,14 +31,10 @@ export class EmailService implements EmailServiceInterface {
         return await this._emailStrategy.send(renderedEmail);
     }
 
-    private renderTemplate(message: string): string {
+    private renderTemplate(message: string, template?: string): string {
         nunjucks.configure({ autoescape: true });
-        const template = this.getTemplateContent(this._defaultTemplate);
+        const tmpl = template || this._defaultTemplate;
 
-        return nunjucks.renderString(template, { message });
-    }
-
-    private getTemplateContent(fileName: string): string {
-        return fs.readFileSync(path.resolve(this._templatesDir, fileName), 'utf8');
+        return nunjucks.renderString(tmpl, { message });
     }
 }

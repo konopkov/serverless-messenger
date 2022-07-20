@@ -29,6 +29,9 @@ export class Lambda extends Construct {
                 minify: true,
                 sourceMap: true,
                 preCompilation: true,
+                loader: {
+                    '.html': 'text',
+                },
             },
             handler: handler,
             entry: entryPath,
