@@ -4,6 +4,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { AppSync } from './appsync-construct';
 import { DebugLambda, Lambda } from './lambda-construct';
 import { Resolvers } from './resolvers-construct';
+import { SES } from './ses-construct';
+import { SNS } from './sns-construct';
 
 import type { EnvVariables } from './models/env-variables';
 import type { ServiceProps } from './models/service-props';
@@ -13,20 +15,22 @@ import type { StackProps } from 'aws-cdk-lib';
 const LambdaConstruct = process.env.DEBUG ? DebugLambda : Lambda;
 
 export class ServerlessMessengerStack extends Stack {
+    private _serviceProps: ServiceProps;
+
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         // Deployment properties
         const { STAGE = 'dev', SNS_REGION = 'us-east-1', SES_REGION = 'eu-west-1' } = process.env as EnvVariables;
 
-        const ServiceProps: ServiceProps = {
+        this._serviceProps = {
             serviceName: 'serverless-messenger',
             stage: STAGE,
             region: props?.env?.region || 'eu-central-1',
         };
 
         // IAM Role
-        const defaultRoleId = `${ServiceProps.serviceName}-default-role-${ServiceProps.stage}`;
+        const defaultRoleId = this.constructId('default-role');
         const defaultRole = new iam.Role(this, defaultRoleId, {
             assumedBy: new iam.CompositePrincipal(
                 new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -38,30 +42,40 @@ export class ServerlessMessengerStack extends Stack {
         });
 
         // Lambda
-        const appSyncLambdaId = `${ServiceProps.serviceName}-graphql-handler-${ServiceProps.stage}`;
+        const appSyncLambdaId = this.constructId('graphql-handler');
         const { lambda: appSyncLambda } = new LambdaConstruct(this, appSyncLambdaId, {
-            ...ServiceProps,
+            ...this._serviceProps,
             handler: 'graphql.ts',
             environment: {
-                SERVICE_NAME: ServiceProps.serviceName,
+                SERVICE_NAME: this._serviceProps.serviceName,
                 SNS_REGION: SNS_REGION,
                 SES_REGION: SES_REGION,
             },
         });
         appSyncLambda.grantInvoke(defaultRole);
 
+        const { policyStatement: snsStatement } = new SNS(this, this.constructId('sns-publish-statement'));
+        const { policyStatement: sesStatement } = new SES(this, this.constructId('ses-publish-statement'));
+
+        const appSyncLambdaPolicyId = this.constructId('appsync-lambda-policy');
+        const policy = new iam.Policy(this, appSyncLambdaPolicyId, {
+            statements: [snsStatement, sesStatement],
+        });
+
+        policy.attachToRole(<iam.IRole>appSyncLambda.role);
+
         // AppSync
-        const appsyncApiId = `${ServiceProps.serviceName}-appsync-api-${ServiceProps.stage}`;
+        const appsyncApiId = this.constructId('appsync-api');
         const { graphqlApi, lambdaDataSource, apiKey } = new AppSync(this, appsyncApiId, {
-            ...ServiceProps,
+            ...this._serviceProps,
             lambdaArn: appSyncLambda.functionArn,
             role: defaultRole,
         });
 
         // Resolvers
-        const resolversId = `${ServiceProps.serviceName}-appsync-resolvers-${ServiceProps.stage}`;
+        const resolversId = this.constructId('appsync-resolvers');
         const { resolvers } = new Resolvers(this, resolversId, {
-            ...ServiceProps,
+            ...this._serviceProps,
             apiId: graphqlApi.attrApiId,
             dataSourceName: lambdaDataSource.attrName,
         });
@@ -69,38 +83,24 @@ export class ServerlessMessengerStack extends Stack {
             resolver.addDependsOn(lambdaDataSource);
         });
 
-        // Sns publish statement
-        const snsStatement = new iam.PolicyStatement({
-            actions: ['SNS:Publish'],
-            resources: ['*'],
-        });
-
-        // Sns publish statement
-        const sesStatement = new iam.PolicyStatement({
-            actions: ['SES:SendEmail'],
-            resources: ['*'],
-        });
-
-        const appSyncLambdaPolicyId = `${ServiceProps.serviceName}-sns-policy-${ServiceProps.stage}`;
-        const policy = new iam.Policy(this, appSyncLambdaPolicyId, {
-            statements: [snsStatement, sesStatement],
-        });
-
-        policy.attachToRole(<iam.IRole>appSyncLambda.role);
-
         // CF Outputs
-        const graphQlUrlOutputId = `${ServiceProps.serviceName}-graphql-url-${ServiceProps.stage}`;
+        const graphQlUrlOutputId = this.constructId('graphql-url');
         const graphQlUrlOutput = new CfnOutput(this, graphQlUrlOutputId, {
             value: graphqlApi.attrGraphQlUrl,
             description: 'GraphQL entrypoint',
             exportName: 'graphQLUrl',
         });
 
-        const apiKeyOutputId = `${ServiceProps.serviceName}-api-key-value-${ServiceProps.stage}`;
+        const apiKeyOutputId = this.constructId('api-key-value');
         const apiKeyOutput = new CfnOutput(this, apiKeyOutputId, {
             value: apiKey.attrApiKey,
             description: 'API key value',
             exportName: 'apiKeyValue',
         });
+    }
+    private constructId(name: string) {
+        const { serviceName, stage } = this._serviceProps;
+
+        return `${serviceName}-${name}-${stage}`;
     }
 }
