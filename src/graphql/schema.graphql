@@ -7,7 +7,7 @@ schema {
 Root query type
 """
 type Query {
-    getMessages(filter: MessageFilter): [Message]
+    getMessages(filter: MessageFilter!): [Message]
 }
 
 """
@@ -37,17 +37,14 @@ type Message {
     to: String
     senderId: String
     from: String
-    message: String
+    body: String
     deliveryMethod: DeliveryMethod
     deliveryStatus: DeliveryStatus
     createdAt: String
 }
 
 input MessageFilter {
-    receiverId: String
-    to: String
-    senderId: String
-    from: String
+    to: String!
 }
 
 input MessageInput {
@@ -55,6 +52,6 @@ input MessageInput {
     to: String!
     senderId: String
     from: String
-    message: String!
+    body: String!
     deliveryMethod: DeliveryMethod!
 }

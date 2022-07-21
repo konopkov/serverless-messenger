@@ -25,7 +25,7 @@ export class EmailService implements EmailServiceInterface {
             ...message,
             subject: message.subject || this._defaultSubject,
             from: message.from || this._defaultFrom,
-            message: this.renderTemplate(message.message),
+            message: this.renderTemplate(message.body),
         };
 
         return await this._emailStrategy.send(renderedEmail);

@@ -23,7 +23,7 @@ export class EmailStrategySes implements EmailStrategyInterface {
                 Body: {
                     Html: {
                         Charset: 'UTF-8',
-                        Data: email.message,
+                        Data: email.body,
                     },
                 },
                 Subject: {

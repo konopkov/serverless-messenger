@@ -10,7 +10,7 @@ export class SmsStrategySns implements SmsStrategyInterface {
     async send(sms: SMS): Promise<SMS> {
         const params = {
             PhoneNumber: sms.to,
-            Message: sms.message,
+            Message: sms.body,
         };
 
         await this._sns.send(new PublishCommand(params));

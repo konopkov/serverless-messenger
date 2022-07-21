@@ -11,6 +11,7 @@ import type { EnvVariables } from '../src/shared/models/env-variables';
 import type { ServiceProps } from './models';
 import type { Construct } from 'constructs';
 import type { StackProps } from 'aws-cdk-lib';
+import { DynamoDbTable } from './dynamo-table-construct';
 
 const LambdaConstruct = process.env.DEBUG ? DebugLambda : Lambda;
 
@@ -41,6 +42,13 @@ export class ServerlessMessengerStack extends Stack {
             roleName: defaultRoleId,
         });
 
+        // DynamoDb Table
+        const dynamoDbTableId = this.constructId('dynamo-db');
+        const { table: dynamoDbTable, policyStatement: dynamoStatement } = new DynamoDbTable(this, dynamoDbTableId, {
+            pk: 'PK',
+            sk: 'SK',
+        });
+
         // Lambda
         const appSyncLambdaId = this.constructId('graphql-handler');
         const { lambda: appSyncLambda } = new LambdaConstruct(this, appSyncLambdaId, {
@@ -50,6 +58,7 @@ export class ServerlessMessengerStack extends Stack {
                 SERVICE_NAME: this._serviceProps.serviceName,
                 SNS_REGION: SNS_REGION,
                 SES_REGION: SES_REGION,
+                TABLE_NAME: dynamoDbTable.tableName,
             },
         });
         appSyncLambda.grantInvoke(defaultRole);
@@ -59,7 +68,7 @@ export class ServerlessMessengerStack extends Stack {
 
         const appSyncLambdaPolicyId = this.constructId('appsync-lambda-policy');
         const policy = new iam.Policy(this, appSyncLambdaPolicyId, {
-            statements: [snsStatement, sesStatement],
+            statements: [snsStatement, sesStatement, dynamoStatement],
         });
 
         policy.attachToRole(<iam.IRole>appSyncLambda.role);
@@ -98,6 +107,7 @@ export class ServerlessMessengerStack extends Stack {
             exportName: 'apiKeyValue',
         });
     }
+
     private constructId(name: string) {
         const { serviceName, stage } = this._serviceProps;
 

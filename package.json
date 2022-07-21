@@ -8,9 +8,13 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "build": "tsc",
-    "watch": "tsc -w",
+    "watch": "./build.js -watch -sourcemap",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "cdk-local": "cdk synth --no-staging > local/template.yaml",
+    "cdk-local:debug": "DEBUG=true npm run cdk-local",
+    "invoke": "sam local invoke serverlessmessengergraphqlhandlerdev57BD572B  -t local/template.yaml --env-vars local/environment.json",
+    "invoke:debug": "npm run invoke -- --debug-port 5858"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.101",
@@ -30,6 +34,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.131.0",
     "@aws-sdk/client-ses": "^3.131.0",
     "@aws-sdk/client-sns": "^3.131.0",
     "aws-cdk-lib": "2.27.0",
@@ -39,6 +44,7 @@
     "joi-phone-number": "^5.1.1",
     "nunjucks": "^3.2.3",
     "reflect-metadata": "^0.1.13",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "ulid": "^2.3.0"
   }
 }

@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 
 import { IoCTypes } from './inversify.types';
+import { MessageRepository } from './repositories';
 import { EmailService, EmailStrategySes, MessageService, SmsService, SmsStrategySns } from './services';
 import { ConsoleLogger } from './shared/utils';
 
@@ -15,7 +16,9 @@ import type {
     SmsServiceInterface,
 } from './services';
 
-let container = new Container({
+import type { MessageRepositoryInterface } from './repositories';
+
+const container = new Container({
     defaultScope: 'Singleton',
 });
 
@@ -28,5 +31,7 @@ container.bind<SmsStrategyInterface>(IoCTypes.SmsStrategy).to(SmsStrategySns);
 container.bind<MessageServiceInterface>(IoCTypes.MessageService).to(MessageService);
 
 container.bind<LoggerInterface>(IoCTypes.Logger).to(ConsoleLogger);
+
+container.bind<MessageRepositoryInterface>(IoCTypes.MessagesRepository).to(MessageRepository);
 
 export default container;

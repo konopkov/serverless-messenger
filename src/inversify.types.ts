@@ -8,4 +8,6 @@ export const IoCTypes = {
     SmsStrategy: Symbol.for('SmsStrategy'),
 
     Logger: Symbol.for('Logger'),
+
+    MessagesRepository: Symbol.for('MessagesRepository'),
 };
