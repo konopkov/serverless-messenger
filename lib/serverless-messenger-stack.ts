@@ -7,8 +7,8 @@ import { Resolvers } from './resolvers-construct';
 import { SES } from './ses-construct';
 import { SNS } from './sns-construct';
 
-import type { EnvVariables } from './models/env-variables';
-import type { ServiceProps } from './models/service-props';
+import type { EnvVariables } from '../src/shared/models/env-variables';
+import type { ServiceProps } from './models';
 import type { Construct } from 'constructs';
 import type { StackProps } from 'aws-cdk-lib';
 
