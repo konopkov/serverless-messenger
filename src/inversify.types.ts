@@ -6,4 +6,6 @@ export const IoCTypes = {
 
     SmsService: Symbol.for('SmsService'),
     SmsStrategy: Symbol.for('SmsStrategy'),
+
+    Logger: Symbol.for('Logger'),
 };
