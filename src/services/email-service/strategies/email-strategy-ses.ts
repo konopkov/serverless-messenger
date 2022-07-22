@@ -1,15 +1,24 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 
-import { Email, EmailStrategyInterface } from '../models';
+import { IoCTypes } from '../../../inversify.types';
+
+import type { LoggerInterface } from '../../../shared/models';
+import type { Email, EmailStrategyInterface } from '../models';
 
 @injectable()
 export class EmailStrategySes implements EmailStrategyInterface {
     private _ses = new SESClient({ region: process.env.SES_REGION });
 
+    constructor(
+        @inject(IoCTypes.Logger)
+        private _logger: LoggerInterface,
+    ) {}
+
     async send(email: Email): Promise<Email> {
         const params = this.getParameters(email);
-        const data = await this._ses.send(new SendEmailCommand(params));
+        const response = await this._ses.send(new SendEmailCommand(params));
+        this._logger.info('SES Response', response);
 
         return email;
     }
