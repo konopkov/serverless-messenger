@@ -1,14 +1,13 @@
-import { AppSyncResolverEvent, Context } from 'aws-lambda';
+import { AppSyncResolverEvent } from 'aws-lambda';
 
 import { Mutations } from '../graphql/mutations';
 import { Queries } from '../graphql/queries';
 import container from '../inversify.config';
 import { IoCTypes } from '../inversify.types';
-import { Message } from '../shared/models';
+import { MessageFilter } from '../services/message-service/models';
+import { Message, PaginatedResponse } from '../shared/models';
 
 import type { MessageServiceInterface } from '../services';
-import { MessageFilter } from '../services/message-service/models';
-
 const messageService = container.get<MessageServiceInterface>(IoCTypes.MessageService);
 
 type Arguments = {
@@ -18,7 +17,9 @@ type Arguments = {
     after?: string;
 };
 
-export const handler = async (_event: AppSyncResolverEvent<Arguments>, _context: Context): Promise<any> => {
+export const handler = async (
+    _event: AppSyncResolverEvent<Arguments>,
+): Promise<Message | PaginatedResponse<Message>> => {
     switch (_event.info.fieldName) {
         case Queries.getMessages:
             const { filter, first, after } = _event.arguments;
@@ -30,8 +31,6 @@ export const handler = async (_event: AppSyncResolverEvent<Arguments>, _context:
         }
 
         default:
-            break;
+            throw new Error(`Unknown request: ${_event.info.fieldName}`);
     }
-
-    return [];
 };
