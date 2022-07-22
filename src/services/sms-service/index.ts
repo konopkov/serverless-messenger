@@ -1,5 +1,3 @@
-export * from './models/sms-service';
-export * from './models/sms-strategy';
-
+export * from './models';
 export * from './sms-service';
-export * from './strategies/sms-strategy-sns';
+export * from './strategies';

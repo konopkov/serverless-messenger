@@ -6,5 +6,10 @@ module.exports = {
         '^.+\\.tsx?$': 'ts-jest',
         '\\.html$': 'jest-raw-loader',
     },
-    setupFiles: ['./src/inversify.config.ts'],
+    setupFiles: ['./src/shared/__tests__/setupTests.ts', './src/inversify.config.ts'],
+    globals: {
+        'ts-jest': {
+            isolatedModules: true,
+        },
+    },
 };

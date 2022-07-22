@@ -10,6 +10,7 @@
     "build": "tsc",
     "watch": "./build.js -watch -sourcemap",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "cdk": "cdk",
     "cdk-local": "cdk synth --no-staging > local/template.yaml",
     "cdk-local:debug": "DEBUG=true npm run cdk-local",
@@ -17,6 +18,7 @@
     "invoke:debug": "npm run invoke -- --debug-port 5858"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.3.0",
     "@types/aws-lambda": "^8.10.101",
     "@types/jest": "^27.5.0",
     "@types/node": "^10.17.27",

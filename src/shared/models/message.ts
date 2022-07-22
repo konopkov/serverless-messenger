@@ -10,5 +10,5 @@ export interface Message {
     body: string;
     deliveryMethod: DeliveryMethod;
     deliveryStatus: DeliveryStatus;
-    createdAt: string;
+    createdAt?: string;
 }

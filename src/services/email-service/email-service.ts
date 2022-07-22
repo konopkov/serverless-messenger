@@ -1,16 +1,12 @@
-/// <reference path="./templates/index.d.ts" />
 import { inject, injectable } from 'inversify';
-import * as nunjucks from 'nunjucks';
 
 import { IoCTypes } from '../../inversify.types';
-import defaultTemplate from './templates/default.html';
 
 import type { LoggerInterface, Message } from '../../shared/models';
-import type { Email, EmailServiceInterface, EmailStrategyInterface } from './models';
+import type { Email, EmailServiceInterface, EmailStrategyInterface, TemplateStrategyInterface } from './models';
 
 @injectable()
 export class EmailService implements EmailServiceInterface {
-    private _defaultTemplate = defaultTemplate;
     private _defaultSubject = 'Message';
     private _defaultFrom: string;
 
@@ -20,6 +16,9 @@ export class EmailService implements EmailServiceInterface {
 
         @inject(IoCTypes.Logger)
         private _logger: LoggerInterface,
+
+        @inject(IoCTypes.TemplateStrategy)
+        private _templateEngine: TemplateStrategyInterface,
     ) {
         const { DEFAULT_EMAIL_FROM } = process.env;
         if (!DEFAULT_EMAIL_FROM) {
@@ -45,9 +44,6 @@ export class EmailService implements EmailServiceInterface {
     }
 
     private renderTemplate(message: string, template?: string): string {
-        nunjucks.configure({ autoescape: true });
-        const tmpl = template || this._defaultTemplate;
-
-        return nunjucks.renderString(tmpl, { message });
+        return this._templateEngine.render(message, template);
     }
 }

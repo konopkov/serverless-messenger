@@ -18,7 +18,7 @@ import type { MessageRepositoryInterface } from './models';
 export class MessageRepository implements MessageRepositoryInterface {
     private _tableName: string;
     private _client: DynamoDBClient = new DynamoDBClient({});
-    private _defaultLimit: number = 100;
+    private _defaultLimit = 100;
 
     constructor(
         @inject(IoCTypes.Logger)

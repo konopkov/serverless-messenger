@@ -4,7 +4,14 @@ import { Container } from 'inversify';
 
 import { IoCTypes } from './inversify.types';
 import { MessageRepository } from './repositories';
-import { EmailService, EmailStrategySes, MessageService, SmsService, SmsStrategySns } from './services';
+import {
+    EmailService,
+    EmailStrategySes,
+    MessageService,
+    SmsService,
+    SmsStrategySns,
+    TemplateStrategyNunjucks,
+} from './services';
 import { ConsoleLogger } from './shared/utils';
 
 import type { LoggerInterface } from './shared/models';
@@ -14,6 +21,7 @@ import type {
     EmailStrategyInterface,
     MessageServiceInterface,
     SmsServiceInterface,
+    TemplateStrategyInterface,
 } from './services';
 
 import type { MessageRepositoryInterface } from './repositories';
@@ -24,6 +32,7 @@ const container = new Container({
 
 container.bind<EmailServiceInterface>(IoCTypes.EmailService).to(EmailService);
 container.bind<EmailStrategyInterface>(IoCTypes.EmailStrategy).to(EmailStrategySes);
+container.bind<TemplateStrategyInterface>(IoCTypes.TemplateStrategy).to(TemplateStrategyNunjucks);
 
 container.bind<SmsServiceInterface>(IoCTypes.SmsService).to(SmsService);
 container.bind<SmsStrategyInterface>(IoCTypes.SmsStrategy).to(SmsStrategySns);

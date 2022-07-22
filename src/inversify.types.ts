@@ -3,6 +3,7 @@ export const IoCTypes = {
 
     EmailService: Symbol.for('EmailService'),
     EmailStrategy: Symbol.for('EmailStrategy'),
+    TemplateStrategy: Symbol.for('TemplateStrategy'),
 
     SmsService: Symbol.for('SmsService'),
     SmsStrategy: Symbol.for('SmsStrategy'),

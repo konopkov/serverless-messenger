@@ -12,7 +12,8 @@ export class ConsoleLogger implements LoggerInterface {
     constructor() {
         const { LOGGING_LEVEL } = process.env as EnvVariables;
         if (LOGGING_LEVEL) {
-            this._loggingLevel = LoggingLevel[LOGGING_LEVEL] || this._defaultLoggingLevel;
+            this._loggingLevel = LoggingLevel[LOGGING_LEVEL] ?? this._defaultLoggingLevel;
+
             return;
         }
 
@@ -23,13 +24,13 @@ export class ConsoleLogger implements LoggerInterface {
         this.checkLevel(LoggingLevel.INFO) && console.info(this.processArguments(args));
     }
     warn(...args: unknown[]): void {
-        this.checkLevel(LoggingLevel.WARN) && console.info(this.processArguments(args));
+        this.checkLevel(LoggingLevel.WARN) && console.warn(this.processArguments(args));
     }
     error(...args: unknown[]): void {
-        this.checkLevel(LoggingLevel.ERROR) && console.info(this.processArguments(args));
+        this.checkLevel(LoggingLevel.ERROR) && console.error(this.processArguments(args));
     }
     debug(...args: unknown[]): void {
-        this.checkLevel(LoggingLevel.DEBUG) && console.info(this.processArguments(args));
+        this.checkLevel(LoggingLevel.DEBUG) && console.debug(this.processArguments(args));
     }
 
     private stringify(message: unknown): string {
