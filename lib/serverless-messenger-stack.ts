@@ -26,7 +26,7 @@ export class ServerlessMessengerStack extends Stack {
             STAGE = 'dev',
             SNS_REGION = 'us-east-1',
             SES_REGION = 'eu-west-1',
-            DEFAULT_EMAIL_FROM,
+            DEFAULT_EMAIL_FROM = 'no-reply@example.com',
         } = process.env as EnvVariables;
 
         this._serviceProps = {
@@ -64,7 +64,7 @@ export class ServerlessMessengerStack extends Stack {
                 SNS_REGION: SNS_REGION,
                 SES_REGION: SES_REGION,
                 TABLE_NAME: dynamoDbTable.tableName,
-                DEFAULT_EMAIL_FROM: <string>DEFAULT_EMAIL_FROM,
+                DEFAULT_EMAIL_FROM: DEFAULT_EMAIL_FROM,
             },
         });
         appSyncLambda.grantInvoke(defaultRole);
