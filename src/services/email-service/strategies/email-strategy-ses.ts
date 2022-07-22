@@ -42,6 +42,7 @@ export class EmailStrategySes implements EmailStrategyInterface {
             },
             Source: email.from,
         };
+        this._logger.debug('SES Parameters', params);
 
         return params;
     }

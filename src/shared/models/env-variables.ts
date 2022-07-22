@@ -4,4 +4,5 @@ export interface EnvVariables extends NodeJS.ProcessEnv {
     LOGGING_LEVEL?: 'string';
     SES_REGION?: string;
     SNS_REGION?: string;
+    DEFAULT_EMAIL_FROM?: string;
 }
