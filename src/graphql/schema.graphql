@@ -25,6 +25,9 @@ enum DeliveryMethod {
     SMS
 }
 
+"""
+Delivery status type
+"""
 enum DeliveryStatus {
     PENDING
     ACCEPTED
@@ -32,7 +35,11 @@ enum DeliveryStatus {
     FAILED
 }
 
+"""
+Message type
+"""
 type Message {
+    id: String
     receiverId: String
     to: String
     senderId: String
@@ -43,10 +50,16 @@ type Message {
     createdAt: String
 }
 
+"""
+Message filter type for getMessages query
+"""
 input MessageFilter {
     to: String!
 }
 
+"""
+Message input type for sendMessage mutation
+"""
 input MessageInput {
     receiverId: String
     to: String!

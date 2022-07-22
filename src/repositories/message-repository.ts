@@ -69,6 +69,7 @@ export class MessageRepository implements MessageRepositoryInterface {
 
     private fromItem(item: Record<string, AttributeValue>): Message {
         return {
+            id: item.SK.S,
             receiverId: item.receiverId.S,
             to: <string>item.to.S,
             senderId: item.senderId.S,
