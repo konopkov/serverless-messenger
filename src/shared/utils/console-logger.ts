@@ -1,7 +1,8 @@
 import { injectable } from 'inversify';
 
 import { LoggingLevel } from '../constants/logging-level';
-import { EnvVariables, LoggerInterface } from '../models';
+
+import type { EnvVariables, LoggerInterface } from '../models';
 
 @injectable()
 export class ConsoleLogger implements LoggerInterface {
@@ -46,6 +47,6 @@ export class ConsoleLogger implements LoggerInterface {
     }
 
     private checkLevel(level: number): boolean {
-        return this._loggingLevel >= level;
+        return level >= this._loggingLevel;
     }
 }

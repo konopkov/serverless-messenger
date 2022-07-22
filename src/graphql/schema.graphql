@@ -7,7 +7,7 @@ schema {
 Root query type
 """
 type Query {
-    getMessages(filter: MessageFilter!): [Message]
+    getMessages(filter: MessageFilter!, first: Int, after: String): PaginatedMessages
 }
 
 """
@@ -15,6 +15,14 @@ Root mutation type
 """
 type Mutation {
     sendMessage(input: MessageInput!): Message
+}
+
+"""
+Page info type for pagination
+"""
+type PageInfo {
+    hasNextPage: Boolean
+    endCursor: String
 }
 
 """
@@ -48,6 +56,14 @@ type Message {
     deliveryMethod: DeliveryMethod
     deliveryStatus: DeliveryStatus
     createdAt: String
+}
+
+"""
+Paginated result of getMessages query
+"""
+type PaginatedMessages {
+    data: [Message]
+    pageInfo: PageInfo
 }
 
 """

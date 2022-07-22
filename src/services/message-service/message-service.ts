@@ -1,14 +1,13 @@
 import { inject, injectable } from 'inversify';
 
 import { IoCTypes } from '../../inversify.types';
-import { DeliveryMethod, DeliveryStatus } from '../../shared/models';
+import { DeliveryMethod, DeliveryStatus, PageParams, PaginatedResponse } from '../../shared/models';
 
 import type { SmsServiceInterface } from '../sms-service/models';
 import type { LoggerInterface, Message } from '../../shared/models';
 import type { EmailServiceInterface } from '../email-service/models';
 import type { MessageRepositoryInterface } from '../../repositories';
 import type { MessageFilter, MessageServiceInterface } from './models';
-import { assert } from 'console';
 
 @injectable()
 export class MessageService implements MessageServiceInterface {
@@ -29,6 +28,7 @@ export class MessageService implements MessageServiceInterface {
     async send(message: Message): Promise<Message> {
         let deliveryService: EmailServiceInterface | SmsServiceInterface;
         let sendError: Error | null = null;
+        let sendResult: Message | null = null;
 
         switch (message.deliveryMethod) {
             case DeliveryMethod.SMS:
@@ -46,21 +46,21 @@ export class MessageService implements MessageServiceInterface {
         }
 
         try {
-            await deliveryService.send(message);
+            sendResult = await deliveryService.send(message);
         } catch (error) {
             sendError = error as Error;
         }
 
         const messageWithStatus = {
-            ...message,
+            ...(sendResult ?? message),
             deliveryStatus: sendError ? DeliveryStatus.FAILED : DeliveryStatus.ACCEPTED,
         };
 
         return await this._messageRepository.save(messageWithStatus);
     }
-    async get(filter: MessageFilter): Promise<Message[]> {
+    async get(filter: MessageFilter, pageParams: PageParams): Promise<PaginatedResponse<Message>> {
         const { to: recipient } = filter;
 
-        return await this._messageRepository.getByRecipient(recipient);
+        return await this._messageRepository.getByRecipient(recipient, pageParams);
     }
 }

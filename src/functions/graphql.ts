@@ -14,12 +14,15 @@ const messageService = container.get<MessageServiceInterface>(IoCTypes.MessageSe
 type Arguments = {
     input: Message;
     filter: MessageFilter;
+    first?: number;
+    after?: string;
 };
 
 export const handler = async (_event: AppSyncResolverEvent<Arguments>, _context: Context): Promise<any> => {
     switch (_event.info.fieldName) {
         case Queries.getMessages:
-            return messageService.get(_event?.arguments?.filter);
+            const { filter, first, after } = _event.arguments;
+            return messageService.get(filter, { first, after });
 
         case Mutations.sendMessage: {
             const message = _event?.arguments?.input;
