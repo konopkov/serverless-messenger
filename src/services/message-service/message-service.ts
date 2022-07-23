@@ -58,6 +58,7 @@ export class MessageService implements MessageServiceInterface {
             sendResult = await deliveryService.send(validatedMessage);
         } catch (error) {
             sendError = error as Error;
+            this._logger.error('Error sending message', error);
         }
 
         const messageWithStatus = {
