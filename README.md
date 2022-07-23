@@ -172,7 +172,7 @@ Example response:
         "sendMessage": {
             "to": "<TO_PHONE_NUMBER>",
             "body": "Hello world",
-            "deliveryMethod": "EMAIL",
+            "deliveryMethod": "SMS",
             "deliveryStatus": "ACCEPTED",
             "recipientId": null,
             "senderId": null
