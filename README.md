@@ -15,6 +15,8 @@ Build a message delivery feature in AWS that can send messages to users and also
 
 ## Architecture diagram:
 
+![Architecture Diagram](images/Diagram.png)
+
 ## DynamoDB table design
 
 Access patterns
