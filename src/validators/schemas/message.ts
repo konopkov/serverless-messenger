@@ -6,5 +6,5 @@ export const MessageSchema = {
         .string()
         .valid(...Object.values(DeliveryMethod))
         .required(),
-    message: joi.string().required(),
+    body: joi.string().required(),
 };

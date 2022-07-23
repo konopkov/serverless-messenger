@@ -1,5 +1,7 @@
 export const IoCTypes = {
     MessageService: Symbol.for('MessageService'),
+    MessagesRepository: Symbol.for('MessagesRepository'),
+    MessageValidator: Symbol.for('MessageValidator'),
 
     EmailService: Symbol.for('EmailService'),
     EmailStrategy: Symbol.for('EmailStrategy'),
@@ -9,6 +11,4 @@ export const IoCTypes = {
     SmsStrategy: Symbol.for('SmsStrategy'),
 
     Logger: Symbol.for('Logger'),
-
-    MessagesRepository: Symbol.for('MessagesRepository'),
 };

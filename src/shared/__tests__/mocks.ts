@@ -2,7 +2,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { SESClient } from '@aws-sdk/client-ses';
 import { SNSClient } from '@aws-sdk/client-sns';
 
-import type { LoggerInterface } from '../models';
+import type { LoggerInterface, Message } from '../models';
 import type {
     EmailServiceInterface,
     EmailStrategyInterface,
@@ -11,6 +11,7 @@ import type {
     TemplateStrategyInterface,
 } from '../../services';
 import type { MessageRepositoryInterface } from '../../repositories';
+import type { ValidatorInterface } from '../../validators/models/validator-interface';
 
 export function getDynamoMock() {
     const ddbMock = {
@@ -100,4 +101,12 @@ export function getMockTemplateEngine(): TemplateStrategyInterface {
     };
 
     return mockTemplateEngine;
+}
+
+export function getMockMessageValidator(): ValidatorInterface<Message> {
+    const mockMessageValidator = {
+        validate: jest.fn(),
+    };
+
+    return mockMessageValidator;
 }

@@ -1,4 +1,5 @@
-import { DeliveryMethod } from '../../shared/models';
+import { buildEmailMessage, buildSMSMessage } from '../../shared/__tests__/builders';
+import { Message } from '../../shared/models';
 import { MessageValidator } from '../message-validator';
 
 describe('Message validator', () => {
@@ -7,7 +8,7 @@ describe('Message validator', () => {
             const validator = new MessageValidator();
 
             try {
-                const result = validator.validate(message as any);
+                const result = validator.validate(<Message>message);
                 expect(result).toMatchObject(expectedResult);
             } catch (err) {
                 expect((err as Error).message).toBe(expectedErrorMessage);
@@ -17,20 +18,8 @@ describe('Message validator', () => {
 });
 
 function getTestCases() {
-    const validPhoneNumber = '+3112345678';
-    const validEmailAddress = 'ab@cd.com';
-    const validMessageText = 'Hello';
-
-    const validEmailMessage = {
-        to: validEmailAddress,
-        message: validMessageText,
-        deliveryMethod: DeliveryMethod.EMAIL,
-    };
-    const validSmsMessage = {
-        to: validPhoneNumber,
-        message: validMessageText,
-        deliveryMethod: DeliveryMethod.SMS,
-    };
+    const validEmailMessage = buildEmailMessage();
+    const validSmsMessage = buildSMSMessage();
 
     const cases = [
         {
@@ -43,7 +32,7 @@ function getTestCases() {
             expectedErrorMessage: '""to"" did not seem to be a phone number',
         },
         {
-            testName: 'Valid unformatted phone number',
+            testName: 'Valid phone number',
             message: {
                 ...validSmsMessage,
             },
@@ -53,13 +42,16 @@ function getTestCases() {
             expectedErrorMessage: null,
         },
         {
-            testName: 'Valid formatted phone number',
+            testName: 'Valid phone number with formatting',
             message: {
                 ...validSmsMessage,
                 to: '+31 (12) 34 56 78',
+                from: '+31 (98) 76 54 32',
             },
             expectedResult: {
                 ...validSmsMessage,
+                to: '+3112345678',
+                from: '+3198765432',
             },
             expectedErrorMessage: null,
         },

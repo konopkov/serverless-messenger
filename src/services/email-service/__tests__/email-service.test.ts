@@ -14,7 +14,7 @@ describe('Email service', () => {
         process.env.DEFAULT_EMAIL_FROM = faker.internet.email();
 
         jest.resetAllMocks();
-        (mockTemplateEngine.render as jest.Mock).mockImplementation((data) => data);
+        (mockTemplateEngine.render as jest.Mock).mockImplementation(({ body }) => body);
     });
 
     it('Throws an error if process.env.DEFAULT_EMAIL_FROM is not defined', async () => {
@@ -48,7 +48,7 @@ describe('Email service', () => {
         await emailService.send(fakeMessage);
 
         expect(renderSpy).toHaveBeenCalledTimes(1);
-        expect(renderSpy).toHaveBeenCalledWith(fakeMessage.body, undefined);
+        expect(renderSpy).toHaveBeenCalledWith({ body: fakeMessage.body }, undefined);
     });
 
     it('Adds default subject to message', async () => {

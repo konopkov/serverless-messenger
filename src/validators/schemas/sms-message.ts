@@ -1,7 +1,10 @@
 import * as joi from 'joi';
+import joiPhoneNumber from 'joi-phone-number';
+
+import { DeliveryMethod } from '../../shared/models';
 import { MessageSchema } from './message';
 
-const extendJoi = joi.extend(require('joi-phone-number'));
+const extendJoi = joi.extend(joiPhoneNumber);
 
 const DEFAULT_COUNTRY = 'NL';
 const DEFAULT_FORMAT = 'e164';
@@ -12,4 +15,5 @@ export const SMSMessageSchema = {
     ...MessageSchema,
     to: PhoneNumberSchema.required(),
     from: PhoneNumberSchema,
+    deliveryMethod: joi.string().valid(DeliveryMethod.SMS),
 };

@@ -8,6 +8,7 @@ import type { LoggerInterface, Message } from '../../shared/models';
 import type { EmailServiceInterface } from '../email-service/models';
 import type { MessageRepositoryInterface } from '../../repositories';
 import type { MessageFilter, MessageServiceInterface } from './models';
+import type { ValidatorInterface } from '../../validators/models/validator-interface';
 
 @injectable()
 export class MessageService implements MessageServiceInterface {
@@ -23,30 +24,38 @@ export class MessageService implements MessageServiceInterface {
 
         @inject(IoCTypes.MessagesRepository)
         private _messageRepository: MessageRepositoryInterface,
+
+        @inject(IoCTypes.MessageValidator)
+        private _messageValidator: ValidatorInterface<Message>,
     ) {}
 
     async send(message: Message): Promise<Message> {
+        this._logger.info('Incoming message', message);
+
         let deliveryService: EmailServiceInterface | SmsServiceInterface;
         let sendError: Error | null = null;
         let sendResult: Message | null = null;
 
-        switch (message.deliveryMethod) {
+        const validatedMessage = this._messageValidator.validate(message);
+        this._logger.info('Validated message', validatedMessage);
+
+        switch (validatedMessage.deliveryMethod) {
             case DeliveryMethod.SMS:
-                this._logger.info(`Sending SMS message`, message);
+                this._logger.info(`Sending SMS message`, validatedMessage);
                 deliveryService = this._smsService;
                 break;
 
             case DeliveryMethod.EMAIL:
-                this._logger.info('Sending EMAIL message', message);
+                this._logger.info('Sending EMAIL message', validatedMessage);
                 deliveryService = this._emailService;
                 break;
 
             default:
-                throw new Error(`Unknown delivery method: ${message.deliveryMethod}`);
+                throw new Error(`Unknown delivery method: ${validatedMessage.deliveryMethod}`);
         }
 
         try {
-            sendResult = await deliveryService.send(message);
+            sendResult = await deliveryService.send(validatedMessage);
         } catch (error) {
             sendError = error as Error;
         }

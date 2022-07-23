@@ -1,7 +1,6 @@
 import type { DeliveryMethod, DeliveryStatus } from './';
 
 export interface Message {
-    id?: string;
     receiverId?: string;
     to: string;
     senderId?: string;
@@ -9,6 +8,13 @@ export interface Message {
     subject?: string;
     body: string;
     deliveryMethod: DeliveryMethod;
+}
+
+export interface MessageWithDeliveryStatus extends Message {
     deliveryStatus: DeliveryStatus;
-    createdAt?: string;
+}
+
+export interface DynamoMessage extends MessageWithDeliveryStatus {
+    id: string;
+    createdAt: string;
 }

@@ -13,8 +13,9 @@ import {
     TemplateStrategyNunjucks,
 } from './services';
 import { ConsoleLogger } from './shared/utils';
+import { MessageValidator } from './validators/message-validator';
 
-import type { LoggerInterface } from './shared/models';
+import type { LoggerInterface, Message } from './shared/models';
 import type {
     EmailServiceInterface,
     SmsStrategyInterface,
@@ -25,6 +26,7 @@ import type {
 } from './services';
 
 import type { MessageRepositoryInterface } from './repositories';
+import type { ValidatorInterface } from './validators/models/validator-interface';
 
 const container = new Container({
     defaultScope: 'Singleton',
@@ -38,9 +40,9 @@ container.bind<SmsServiceInterface>(IoCTypes.SmsService).to(SmsService);
 container.bind<SmsStrategyInterface>(IoCTypes.SmsStrategy).to(SmsStrategySns);
 
 container.bind<MessageServiceInterface>(IoCTypes.MessageService).to(MessageService);
+container.bind<MessageRepositoryInterface>(IoCTypes.MessagesRepository).to(MessageRepository);
+container.bind<ValidatorInterface<Message>>(IoCTypes.MessageValidator).to(MessageValidator);
 
 container.bind<LoggerInterface>(IoCTypes.Logger).to(ConsoleLogger);
-
-container.bind<MessageRepositoryInterface>(IoCTypes.MessagesRepository).to(MessageRepository);
 
 export default container;

@@ -1,6 +1,6 @@
-import type { Message, PageParams, PaginatedResponse } from '../../shared/models';
+import type { Message, MessageWithDeliveryStatus, PageParams, PaginatedResponse } from '../../shared/models';
 
 export interface MessageRepositoryInterface {
-    save(message: Message): Promise<Message>;
+    save(message: MessageWithDeliveryStatus): Promise<Message>;
     getByRecipient(recipient: string, pageParams: PageParams): Promise<PaginatedResponse<Message>>;
 }

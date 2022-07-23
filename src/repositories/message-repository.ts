@@ -3,15 +3,17 @@ import { inject, injectable } from 'inversify';
 import { ulid } from 'ulid';
 
 import { IoCTypes } from '../inversify.types';
-import {
+
+import type {
     DeliveryMethod,
     DeliveryStatus,
+    DynamoMessage,
     LoggerInterface,
     Message,
+    MessageWithDeliveryStatus,
     PageParams,
     PaginatedResponse,
 } from '../shared/models';
-
 import type { MessageRepositoryInterface } from './models';
 
 @injectable()
@@ -30,7 +32,7 @@ export class MessageRepository implements MessageRepositoryInterface {
         this._tableName = process.env.TABLE_NAME;
     }
 
-    async save(message: Message): Promise<Message> {
+    async save(message: MessageWithDeliveryStatus): Promise<Message> {
         const command = new PutItemCommand({
             TableName: this._tableName,
             Item: this.toItem(message),
@@ -83,7 +85,7 @@ export class MessageRepository implements MessageRepositoryInterface {
         return `MESSAGE#${id}`;
     }
 
-    private constructStartKey(pk: string, nextSk?: string): undefined | Record<'PK' | 'SK', { S: string }> {
+    private constructStartKey(pk: string, nextSk?: string): undefined | Record<'PK' | 'SK', AttributeValue> {
         return nextSk ? { PK: { S: pk }, SK: { S: nextSk } } : undefined;
     }
 
@@ -91,9 +93,9 @@ export class MessageRepository implements MessageRepositoryInterface {
         return Date.now().toString();
     }
 
-    private fromItem(item: Record<string, AttributeValue>): Message {
+    private fromItem(item: Record<string, AttributeValue>): DynamoMessage {
         return {
-            id: item.SK.S,
+            id: <string>item.SK.S,
             receiverId: item.receiverId.S,
             to: <string>item.to.S,
             senderId: item.senderId.S,
@@ -106,7 +108,7 @@ export class MessageRepository implements MessageRepositoryInterface {
         };
     }
 
-    private toItem(message: Message): Record<string, AttributeValue> {
+    private toItem(message: MessageWithDeliveryStatus): Record<string, AttributeValue> {
         return {
             PK: { S: this.constructPk(message.to) },
             SK: { S: this.constructSk() },

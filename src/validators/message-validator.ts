@@ -1,10 +1,13 @@
+import { injectable } from 'inversify';
 import * as joi from 'joi';
 
 import { DeliveryMethod } from '../shared/models';
-import { EmailMessageSchema, SMSMessageSchema } from './schemas';
 import { ValidatorInterface } from './models/validator-interface';
+import { EmailMessageSchema, SMSMessageSchema } from './schemas';
 
 import type { Message } from '../shared/models';
+
+@injectable()
 export class MessageValidator implements ValidatorInterface<Message> {
     validate(message: Message): Message {
         const schemas = {
