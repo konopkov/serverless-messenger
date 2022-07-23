@@ -8,8 +8,10 @@ export class SES extends Construct {
         super(scope, id);
 
         const policyStatement = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
             actions: ['SES:SendEmail'],
             resources: ['*'],
+            conditions: { Bool: { 'aws:SecureTransport': 'true' } },
         });
 
         this.policyStatement = policyStatement;

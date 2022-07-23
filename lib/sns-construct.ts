@@ -8,8 +8,10 @@ export class SNS extends Construct {
         super(scope, id);
 
         const policyStatement = new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
             actions: ['SNS:Publish'],
             resources: ['*'],
+            conditions: { 'ForAllValues:Bool': { PhoneNumber: 'true', 'aws:SecureTransport': 'true' } },
         });
 
         this.policyStatement = policyStatement;
