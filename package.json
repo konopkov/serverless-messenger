@@ -11,11 +11,7 @@
     "watch": "./build.js -watch -sourcemap",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "cdk": "cdk",
-    "cdk-local": "cdk synth --no-staging > local/template.yaml",
-    "cdk-local:debug": "DEBUG=true npm run cdk-local",
-    "invoke": "sam local invoke serverlessmessengergraphqlhandlerdev57BD572B  -t local/template.yaml --env-vars local/environment.json",
-    "invoke:debug": "npm run invoke -- --debug-port 5858"
+    "cdk": "cdk"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",
