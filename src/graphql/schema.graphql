@@ -52,6 +52,7 @@ type Message {
     to: String
     senderId: String
     from: String
+    subject: String
     body: String
     deliveryMethod: DeliveryMethod
     deliveryStatus: DeliveryStatus
@@ -81,6 +82,7 @@ input MessageInput {
     to: String!
     senderId: String
     from: String
+    subject: String
     body: String!
     deliveryMethod: DeliveryMethod!
 }
