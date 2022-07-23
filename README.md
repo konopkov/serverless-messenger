@@ -27,9 +27,9 @@ Access patterns
 
 Table design
 
-| Entity  | PK           | SK                  |
-| ------- | ------------ | ------------------- |
-| Message | MESSAGE#<to> | MESSAGE#<messageId> |
+| Entity  | PK             | SK                    |
+| ------- | -------------- | --------------------- |
+| Message | MESSAGE#\<to\> | MESSAGE#\<messageId\> |
 
 ## Security:
 
