@@ -43,7 +43,7 @@ export class EmailService implements EmailServiceInterface {
         return email;
     }
 
-    private renderTemplate(message: string, template?: string): string {
-        return this._templateEngine.render(message, template);
+    private renderTemplate(body: string, template?: string): string {
+        return this._templateEngine.render({ body }, template);
     }
 }
