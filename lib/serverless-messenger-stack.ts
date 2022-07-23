@@ -19,8 +19,6 @@ export class ServerlessMessengerStack extends Stack {
     private _serviceProps: ServiceProps;
 
     constructor(scope: Construct, id: string, props?: StackProps) {
-        super(scope, id, props);
-
         // Deployment properties
         const {
             STAGE = 'dev',
@@ -28,6 +26,9 @@ export class ServerlessMessengerStack extends Stack {
             SES_REGION = 'eu-west-1',
             DEFAULT_EMAIL_FROM = 'no-reply@example.com',
         } = process.env as EnvVariables;
+        const stageId = `${id}${STAGE}`;
+
+        super(scope, stageId, props);
 
         this._serviceProps = {
             serviceName: 'serverless-messenger',
@@ -103,14 +104,14 @@ export class ServerlessMessengerStack extends Stack {
         const graphQlUrlOutput = new CfnOutput(this, graphQlUrlOutputId, {
             value: graphqlApi.attrGraphQlUrl,
             description: 'GraphQL entrypoint',
-            exportName: 'graphQLUrl',
+            exportName: `graphQLUrl${this._serviceProps.stage}`,
         });
 
         const apiKeyOutputId = this.constructId('api-key-value');
         const apiKeyOutput = new CfnOutput(this, apiKeyOutputId, {
             value: apiKey.attrApiKey,
             description: 'API key value',
-            exportName: 'apiKeyValue',
+            exportName: `apiKeyValue${this._serviceProps.stage}`,
         });
     }
 
