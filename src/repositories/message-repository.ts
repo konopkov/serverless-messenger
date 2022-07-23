@@ -96,7 +96,7 @@ export class MessageRepository implements MessageRepositoryInterface {
     private fromItem(item: Record<string, AttributeValue>): DynamoMessage {
         return {
             id: <string>item.SK.S,
-            receiverId: item.receiverId.S,
+            recipientId: item.recipientId.S,
             to: <string>item.to.S,
             senderId: item.senderId.S,
             from: item.from.S,
@@ -112,7 +112,7 @@ export class MessageRepository implements MessageRepositoryInterface {
         return {
             PK: { S: this.constructPk(message.to) },
             SK: { S: this.constructSk() },
-            receiverId: message.receiverId ? { S: message.receiverId } : { NULL: true },
+            recipientId: message.recipientId ? { S: message.recipientId } : { NULL: true },
             to: { S: message.to },
             senderId: message.senderId ? { S: message.senderId } : { NULL: true },
             from: message.from ? { S: message.from } : { NULL: true },

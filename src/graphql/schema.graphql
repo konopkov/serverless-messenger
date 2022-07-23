@@ -48,7 +48,7 @@ Message type
 """
 type Message {
     id: String
-    receiverId: String
+    recipientId: String
     to: String
     senderId: String
     from: String
@@ -77,7 +77,7 @@ input MessageFilter {
 Message input type for sendMessage mutation
 """
 input MessageInput {
-    receiverId: String
+    recipientId: String
     to: String!
     senderId: String
     from: String

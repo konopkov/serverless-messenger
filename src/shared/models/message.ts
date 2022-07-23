@@ -1,7 +1,7 @@
 import type { DeliveryMethod, DeliveryStatus } from './';
 
 export interface Message {
-    receiverId?: string;
+    recipientId?: string;
     to: string;
     senderId?: string;
     from?: string;

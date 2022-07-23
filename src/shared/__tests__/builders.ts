@@ -19,6 +19,8 @@ export function buildMessage(overrides?: Partial<Message>): Message {
         from: deliveryMethod === DeliveryMethod.EMAIL ? faker.internet.email() : faker.phone.number('+316########'),
         body: faker.lorem.paragraph(),
         deliveryMethod: deliveryMethod,
+        senderId: faker.datatype.uuid(),
+        recipientId: faker.datatype.uuid(),
         ...extras,
         ...overrides,
     };

@@ -7,4 +7,6 @@ export const MessageSchema = {
         .valid(...Object.values(DeliveryMethod))
         .required(),
     body: joi.string().required(),
+    senderId: joi.string(),
+    recipientId: joi.string(),
 };
