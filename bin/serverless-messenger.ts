@@ -1,21 +1,36 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
+
 import * as cdk from 'aws-cdk-lib';
+
+import { ObservabilityStack } from '../lib/observability-stack';
 import { ServerlessMessengerStack } from '../lib/serverless-messenger-stack';
+import { EnvVariables } from '../src/shared/models';
+
+const {
+    STAGE = 'dev',
+    SNS_REGION = 'us-east-1',
+    SES_REGION = 'eu-west-1',
+    DEFAULT_EMAIL_FROM = 'no-reply@example.com',
+    REGION = 'eu-central-1',
+    SERVICE_NAME = 'serverless-messenger',
+} = process.env as EnvVariables;
 
 const app = new cdk.App();
-new ServerlessMessengerStack(app, 'ServerlessMessengerStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+const messengerStackId = `serverless-messenger-app-${STAGE}`;
+const messengerStack = new ServerlessMessengerStack(app, messengerStackId, {
+    serviceName: SERVICE_NAME,
+    stage: STAGE,
+    snsRegion: SNS_REGION,
+    sesRegion: SES_REGION,
+    defaultEmailFrom: DEFAULT_EMAIL_FROM,
+    region: REGION,
+});
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
-
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+const observabilityStackId = `serverless-messenger-observability-${STAGE}`;
+const observabilityStack = new ObservabilityStack(app, observabilityStackId, {
+    serviceName: SERVICE_NAME,
+    stage: STAGE,
+    functionName: messengerStack.appSyncLambdaId,
 });

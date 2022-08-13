@@ -40,7 +40,7 @@ Table design
 
 ## Preparations and deployment
 
--   Setup deployment properties in `serverless-messenger-stack.ts` file;
+-   Setup deployment properties in `bin/serverless-messenger.ts` file;
 
 | Property           | Example values           | Meaning                                            |
 | ------------------ | ------------------------ | -------------------------------------------------- |
@@ -56,7 +56,7 @@ Table design
 cdk bootstrap --profile <AWS_PROFILE_NAME>
 
 # Deploy stack
-cdk deploy --profile <AWS_PROFILE_NAME>
+cdk deploy --all --profile <AWS_PROFILE_NAME>
 ```
 
 -   Get endpoint url and API Key

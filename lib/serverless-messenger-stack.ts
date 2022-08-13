@@ -2,39 +2,34 @@ import { CfnOutput, Stack } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 import { AppSync } from './appsync-construct';
+import { DynamoDbTable } from './dynamo-table-construct';
 import { DebugLambda, Lambda } from './lambda-construct';
+import { ServiceProps } from './models/service-props';
 import { Resolvers } from './resolvers-construct';
 import { SES } from './ses-construct';
 import { SNS } from './sns-construct';
 
-import type { EnvVariables } from '../src/shared/models/env-variables';
-import type { ServiceProps } from './models';
 import type { Construct } from 'constructs';
-import type { StackProps } from 'aws-cdk-lib';
-import { DynamoDbTable } from './dynamo-table-construct';
 
 const LambdaConstruct = process.env.DEBUG ? DebugLambda : Lambda;
 
+interface ServerlessMessengerStackProps extends ServiceProps {
+    readonly serviceName: string;
+    readonly stage: string;
+    readonly snsRegion: string;
+    readonly sesRegion: string;
+    readonly defaultEmailFrom: string;
+    readonly region: string;
+}
+
 export class ServerlessMessengerStack extends Stack {
-    private _serviceProps: ServiceProps;
+    private _serviceProps: ServerlessMessengerStackProps;
+    readonly appSyncLambdaId: string;
 
-    constructor(scope: Construct, id: string, props?: StackProps) {
-        // Deployment properties
-        const {
-            STAGE = 'dev',
-            SNS_REGION = 'us-east-1',
-            SES_REGION = 'eu-west-1',
-            DEFAULT_EMAIL_FROM = 'no-reply@example.com',
-        } = process.env as EnvVariables;
-        const stageId = `${id}${STAGE}`;
+    constructor(scope: Construct, id: string, props: ServerlessMessengerStackProps) {
+        super(scope, id, props);
 
-        super(scope, stageId, props);
-
-        this._serviceProps = {
-            serviceName: 'serverless-messenger',
-            stage: STAGE,
-            region: props?.env?.region || 'eu-central-1',
-        };
+        this._serviceProps = props;
 
         // IAM Role
         const defaultRoleId = this.constructId('default-role');
@@ -57,15 +52,16 @@ export class ServerlessMessengerStack extends Stack {
 
         // Lambda
         const appSyncLambdaId = this.constructId('graphql-handler');
+        this.appSyncLambdaId = appSyncLambdaId;
         const { lambda: appSyncLambda } = new LambdaConstruct(this, appSyncLambdaId, {
-            ...this._serviceProps,
+            ...props,
             handler: 'graphql.ts',
             environment: {
-                SERVICE_NAME: this._serviceProps.serviceName,
-                SNS_REGION: SNS_REGION,
-                SES_REGION: SES_REGION,
+                SERVICE_NAME: props.serviceName,
+                SNS_REGION: props.snsRegion,
+                SES_REGION: props.sesRegion,
                 TABLE_NAME: dynamoDbTable.tableName,
-                DEFAULT_EMAIL_FROM: DEFAULT_EMAIL_FROM,
+                DEFAULT_EMAIL_FROM: props.defaultEmailFrom,
             },
         });
         appSyncLambda.grantInvoke(defaultRole);
@@ -83,7 +79,7 @@ export class ServerlessMessengerStack extends Stack {
         // AppSync
         const appsyncApiId = this.constructId('appsync-api');
         const { graphqlApi, lambdaDataSource, apiKey } = new AppSync(this, appsyncApiId, {
-            ...this._serviceProps,
+            ...props,
             lambdaArn: appSyncLambda.functionArn,
             role: defaultRole,
         });
@@ -91,7 +87,7 @@ export class ServerlessMessengerStack extends Stack {
         // Resolvers
         const resolversId = this.constructId('appsync-resolvers');
         const { resolvers } = new Resolvers(this, resolversId, {
-            ...this._serviceProps,
+            ...props,
             apiId: graphqlApi.attrApiId,
             dataSourceName: lambdaDataSource.attrName,
         });
@@ -104,14 +100,14 @@ export class ServerlessMessengerStack extends Stack {
         const graphQlUrlOutput = new CfnOutput(this, graphQlUrlOutputId, {
             value: graphqlApi.attrGraphQlUrl,
             description: 'GraphQL entrypoint',
-            exportName: `graphQLUrl${this._serviceProps.stage}`,
+            exportName: `graphQLUrl${props.stage}`,
         });
 
         const apiKeyOutputId = this.constructId('api-key-value');
         const apiKeyOutput = new CfnOutput(this, apiKeyOutputId, {
             value: apiKey.attrApiKey,
             description: 'API key value',
-            exportName: `apiKeyValue${this._serviceProps.stage}`,
+            exportName: `apiKeyValue${props.stage}`,
         });
     }
 
