@@ -6,6 +6,7 @@ interface ObservabilityStackProps extends StackProps {
     readonly serviceName: string;
     readonly stage: string;
     readonly functionName: string;
+    readonly appSyncApiId: string;
 }
 
 export class ObservabilityStack extends Stack {
@@ -17,6 +18,52 @@ export class ObservabilityStack extends Stack {
         const dashboard = new Dashboard(this, dashboardId, {
             dashboardName: dashboardId,
         });
+
+        // Appsync API metrics widgets
+        dashboard.addWidgets(
+            new GraphWidget({
+                title: 'AWS Appsync 4xx/5xx errors (sum)',
+                width: 12,
+                left: [
+                    new Metric({
+                        namespace: 'AWS/AppSync',
+                        metricName: '4XXError',
+                        dimensionsMap: {
+                            GraphQLAPIId: props.appSyncApiId,
+                        },
+                        statistic: 'sum',
+                        label: 'Sum 4xx Errors',
+                        period: Duration.minutes(1),
+                    }),
+                    new Metric({
+                        namespace: 'AWS/AppSync',
+                        metricName: '5XXError',
+                        dimensionsMap: {
+                            GraphQLAPIId: props.appSyncApiId,
+                        },
+                        statistic: 'sum',
+                        label: 'Sum 5xx Erros',
+                        period: Duration.minutes(1),
+                    }),
+                ],
+            }),
+            new GraphWidget({
+                title: 'AWS Appsync Latency (p99)',
+                width: 12,
+                left: [
+                    new Metric({
+                        namespace: 'AWS/AppSync',
+                        metricName: 'Latency',
+                        dimensionsMap: {
+                            GraphQLAPIId: props.appSyncApiId,
+                        },
+                        statistic: 'p99',
+                        label: 'P99',
+                        period: Duration.minutes(1),
+                    }),
+                ],
+            }),
+        );
 
         // Lambda function metrics widgets
         dashboard.addWidgets(

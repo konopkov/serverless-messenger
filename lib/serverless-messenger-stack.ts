@@ -25,6 +25,7 @@ interface ServerlessMessengerStackProps extends ServiceProps {
 export class ServerlessMessengerStack extends Stack {
     private _serviceProps: ServerlessMessengerStackProps;
     readonly appSyncLambdaId: string;
+    readonly appSyncApiId: string;
 
     constructor(scope: Construct, id: string, props: ServerlessMessengerStackProps) {
         super(scope, id, props);
@@ -83,6 +84,7 @@ export class ServerlessMessengerStack extends Stack {
             lambdaArn: appSyncLambda.functionArn,
             role: defaultRole,
         });
+        this.appSyncApiId = graphqlApi.attrApiId;
 
         // Resolvers
         const resolversId = this.constructId('appsync-resolvers');

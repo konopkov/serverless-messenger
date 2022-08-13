@@ -33,4 +33,5 @@ const observabilityStack = new ObservabilityStack(app, observabilityStackId, {
     serviceName: SERVICE_NAME,
     stage: STAGE,
     functionName: messengerStack.appSyncLambdaId,
+    appSyncApiId: messengerStack.appSyncApiId,
 });
